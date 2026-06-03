@@ -219,3 +219,8 @@ python skills/goofish/scripts/orchestrator.py --recipe inventory-sync --dry-run
 ## License
 
 MIT — see [LICENSE](LICENSE)
+
+
+## 🔗 Friend Links
+
+- 🐧 [**LinuxDO**](https://linux.do) — A community for tech enthusiasts
