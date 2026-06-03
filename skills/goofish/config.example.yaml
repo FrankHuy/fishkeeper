@@ -1,0 +1,20 @@
+# 闲管家 (Goofish) Open Platform Configuration
+# Copy this file to ~/.goofish/config.yaml and fill in your credentials.
+#
+# Config file search order:
+#   1. GOOFISH_CONFIG environment variable (path to YAML file)
+#   2. ./goofish.yaml (current working directory)
+#   3. ~/.goofish/config.yaml
+#
+# Environment variables GOOFISH_APP_KEY and GOOFISH_APP_SECRET
+# override the config file values.
+
+goofish:
+  # 开放平台 AppKey — obtained from the Goofish developer console
+  app_key: ""
+
+  # 开放平台 AppSecret — obtained from the Goofish developer console
+  app_secret: ""
+
+  # API base URL (usually no need to change)
+  base_url: "https://open.goofish.pro"
