@@ -54,10 +54,10 @@ Hermes Agent 是本 Skill 的原生运行环境。
 
 ```bash
 # 将仓库克隆到 Hermes skills 目录
-git clone https://github.com/FractalK/fishkeeper.git ~/.hermes/skills/fishkeeper
+git clone https://github.com/FrankHuy/fishkeeper.git ~/.hermes/skills/fishkeeper
 
 # 或者克隆到自定义位置，然后在 config.yaml 中注册
-git clone https://github.com/FractalK/fishkeeper.git /opt/fishkeeper
+git clone https://github.com/FrankHuy/fishkeeper.git /opt/fishkeeper
 # 在 ~/.hermes/config.yaml 中添加：
 # skills:
 #   - /opt/fishkeeper/skills/goofish
@@ -66,7 +66,7 @@ git clone https://github.com/FractalK/fishkeeper.git /opt/fishkeeper
 **方式 B：通过 hermes CLI 安装**
 
 ```bash
-hermes skills install https://github.com/FractalK/fishkeeper.git
+hermes skills install https://github.com/FrankHuy/fishkeeper.git
 ```
 
 **方式 C：手动复制**
@@ -115,7 +115,7 @@ Claude Code 通过 CLAUDE.md 和文件系统发现项目 Skill。
 
 ```bash
 # 克隆到项目目录
-git clone https://github.com/FractalK/fishkeeper.git /path/to/your-project/fishkeeper
+git clone https://github.com/FrankHuy/fishkeeper.git /path/to/your-project/fishkeeper
 
 # 在项目根目录的 CLAUDE.md 中添加引用：
 # When working with 闲鱼/闲管家/Xianyu API, read and follow the skill at fishkeeper/skills/goofish/SKILL.md
@@ -129,7 +129,7 @@ Codex CLI 通过 AGENTS.md 发现项目规则和工具。
 
 ```bash
 # 克隆到项目目录
-git clone https://github.com/FractalK/fishkeeper.git /path/to/your-project/fishkeeper
+git clone https://github.com/FrankHuy/fishkeeper.git /path/to/your-project/fishkeeper
 
 # 在项目根目录的 AGENTS.md 中添加：
 # ## 闲管家 (Goofish) Skill
@@ -144,7 +144,7 @@ git clone https://github.com/FractalK/fishkeeper.git /path/to/your-project/fishk
 
 ```bash
 # 克隆到项目目录
-git clone https://github.com/FractalK/fishkeeper.git /path/to/your-project/fishkeeper
+git clone https://github.com/FrankHuy/fishkeeper.git /path/to/your-project/fishkeeper
 
 # 在 .cursorrules 中添加：
 # When the user asks about 闲鱼/闲管家/Xianyu store management, refer to fishkeeper/skills/goofish/SKILL.md for API documentation and use the Python client at fishkeeper/skills/goofish/scripts/client.py.
