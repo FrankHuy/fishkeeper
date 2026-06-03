@@ -226,19 +226,19 @@ class TaskRunner:
 
         # Calculate depth for each task
         def get_depth(task: Task, visited: Optional[set] = None) -> int:
-            if visited is None:
-                visited = set()
-            if task.id in visited:
-                return 0  # Circular dependency, break
-            visited.add(task.id)
-            if not task.depends_on:
-                return 0
-            max_dep = 0
-            for dep_id in task.depends_on:
-                dep_task = task_map.get(dep_id)
-                if dep_task:
-                    max_dep = max(max_dep, get_depth(dep_task, visited.copy()))
-            return max_dep + 1
+                if visited is None:
+                    visited = set()
+                if task.id in visited:
+                    raise ValueError(f"Circular dependency detected involving task '{task.id}'")
+                visited.add(task.id)
+                if not task.depends_on:
+                    return 0
+                max_dep = 0
+                for dep_id in task.depends_on:
+                    dep_task = task_map.get(dep_id)
+                    if dep_task:
+                        max_dep = max(max_dep, get_depth(dep_task, visited.copy()))
+                return max_dep + 1
 
         # Group by depth
         levels: Dict[int, List[Task]] = {}

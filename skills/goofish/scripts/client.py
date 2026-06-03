@@ -85,19 +85,19 @@ class GoofishClient:
         """
         self.base_url = (base_url or self.BASE_URL).rstrip("/")
 
-        if app_key and app_secret:
-            self.app_key = app_key
-            self.app_secret = app_secret
-        else:
-            self.app_key = os.environ.get("GOOFISH_APP_KEY", "")
-            self.app_secret = os.environ.get("GOOFISH_APP_SECRET", "")
+        # Resolve credentials: explicit args > env vars > config file
+        # Use str() to normalize: None means "not provided", empty string means "not set"
+        self.app_key = str(app_key) if app_key else os.environ.get("GOOFISH_APP_KEY", "")
+        self.app_secret = str(app_secret) if app_secret else os.environ.get("GOOFISH_APP_SECRET", "")
 
-            if not self.app_key or not self.app_secret:
-                config = self._load_config(config_path)
+        if not self.app_key or not self.app_secret:
+            config = self._load_config(config_path)
+            if not self.app_key:
                 self.app_key = config.get("app_key", "")
+            if not self.app_secret:
                 self.app_secret = config.get("app_secret", "")
-                if config.get("base_url"):
-                    self.base_url = config["base_url"].rstrip("/")
+            if config.get("base_url") and base_url is None:
+                self.base_url = config["base_url"].rstrip("/")
 
         if not self.app_key or not self.app_secret:
             raise ValueError(
@@ -117,7 +117,9 @@ class GoofishClient:
         paths = []
         if config_path:
             paths.append(Path(config_path))
-        paths.append(Path(os.environ.get("GOOFISH_CONFIG", "")))
+        env_config = os.environ.get("GOOFISH_CONFIG", "")
+        if env_config:
+            paths.append(Path(env_config))
         paths.append(Path.cwd() / "goofish.yaml")
         paths.append(Path.home() / ".goofish" / "config.yaml")
 
@@ -160,7 +162,19 @@ class GoofishClient:
         if extra_params:
             params.update(extra_params)
 
-        resp = self.session.post(url, params=params, json=body, timeout=30)
+        # Serialize body with the SAME compact format used by signer for MD5.
+        # Using requests' json= parameter would produce default separators
+        # (", ", ": ") which differ from the compact separators (",", ":")
+        # used in the MD5 calculation, causing server-side signature mismatch.
+        if body is not None:
+            body_str = json.dumps(body, separators=(",", ":"), ensure_ascii=False)
+        else:
+            body_str = json.dumps({}, separators=(",", ":"))
+
+        resp = self.session.post(
+            url, params=params, data=body_str, timeout=30,
+            headers={"Content-Type": "application/json"},
+        )
         resp.raise_for_status()
         result = resp.json()
 
@@ -225,7 +239,7 @@ class GoofishClient:
             "sp_biz_type": sp_biz_type,
             "channel_cat_id": channel_cat_id,
         }
-        if sub_property_id:
+        if sub_property_id is not None:
             body["sub_property_id"] = sub_property_id
         return self._request("/api/open/product/pv/list", body=body)
 
@@ -307,8 +321,9 @@ class GoofishClient:
             data = result.get("data", {})
             items = data.get("list", [])
             all_products.extend(items)
-            total = data.get("count", 0)
-            if page_no * page_size >= total or page_no * page_size >= 10000:
+            # Stop when current page returns fewer items than requested,
+            # or when we hit the platform's 10,000 record cap.
+            if len(items) < page_size or page_no * page_size >= 10000:
                 break
             page_no += 1
         return all_products
@@ -583,8 +598,7 @@ class GoofishClient:
             data = result.get("data", {})
             items = data.get("list", [])
             all_orders.extend(items)
-            total = data.get("count", 0)
-            if page_no * page_size >= total or page_no * page_size >= 10000:
+            if len(items) < page_size or page_no * page_size >= 10000:
                 break
             page_no += 1
         return all_orders
@@ -632,19 +646,19 @@ class GoofishClient:
             "express_code": express_code,
             "express_name": express_name,
         }
-        if ship_name:
+        if ship_name is not None:
             body["ship_name"] = ship_name
-        if ship_mobile:
+        if ship_mobile is not None:
             body["ship_mobile"] = ship_mobile
         if ship_district_id is not None:
             body["ship_district_id"] = ship_district_id
-        if ship_prov_name:
+        if ship_prov_name is not None:
             body["ship_prov_name"] = ship_prov_name
-        if ship_city_name:
+        if ship_city_name is not None:
             body["ship_city_name"] = ship_city_name
-        if ship_area_name:
+        if ship_area_name is not None:
             body["ship_area_name"] = ship_area_name
-        if ship_address:
+        if ship_address is not None:
             body["ship_address"] = ship_address
         return self._request("/api/open/order/ship", body=body)
 
