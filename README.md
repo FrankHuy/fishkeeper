@@ -2,6 +2,19 @@
 
 闲管家 (Goofish/Xianyu) Open Platform Skill — 闲鱼店铺商品管理、订单处理、库存同步的 Agent 工具包。
 
+## 为什么叫 fishkeeper？
+
+**fishkeeper = 闲管家** — 闲鱼（鱼 = fish）+ 管家（keeper）的英文直译。
+
+项目名 **fishkeeper** 是本工具的品牌名，skill 名 **goofish** 则对应闲管家开放平台的官方英文名（Goofish Open Platform）。两者指向同一个东西，只是在不同层级使用：
+
+| 层级 | 名称 | 含义 |
+|------|------|------|
+| 仓库名 / 项目名 | fishkeeper | 闲管家 — 品牌名，体现"管鱼"的定位 |
+| Skill 名 | goofish | 闲管家开放平台的官方 API 标识，用于 agent 关键词匹配 |
+
+在 Hermes 中引用时使用 skill 名 `goofish`，项目名 `fishkeeper` 出现在仓库地址和文档中。
+
 ## 功能
 
 - 商品全生命周期管理（创建、编辑、上架、下架、删除、批量操作）

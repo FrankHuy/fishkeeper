@@ -16,6 +16,8 @@ metadata:
 
 闲管家开放平台 (Goofish Open Platform) is the official API for managing Xianyu (闲鱼) stores programmatically. It provides full product lifecycle management, order processing, and store information queries.
 
+> **命名说明：** 项目名 **fishkeeper**（闲鱼+管家=fish+keeper）是本工具的品牌名，skill 名 **goofish** 对应闲管家开放平台的官方英文名，用于 agent 关键词匹配。
+
 **Base URL:** `https://open.goofish.pro`
 
 **Auth Method:** MD5 signature with AppKey + request body MD5 + timestamp + AppSecret. All requests use POST with query parameters and JSON body.
