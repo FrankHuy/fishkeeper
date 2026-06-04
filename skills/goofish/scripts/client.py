@@ -139,6 +139,14 @@ class GoofishClient:
 
         return {"app_key": "", "app_secret": "", "base_url": ""}
 
+    def _ensure_int(self, value, field_name="value"):
+        """Ensure numeric ID fields are sent as integers, not strings.
+        The Goofish API rejects string product_id/order_no with type mismatch errors."""
+        if isinstance(value, str) and value.isdigit():
+            return int(value)
+        return value
+
+
     def _request(
         self,
         path: str,
@@ -332,7 +340,7 @@ class GoofishClient:
         """查询商品详情 — get full product details."""
         return self._request(
             "/api/open/product/detail",
-            body={"product_id": product_id},
+            body={"product_id": self._ensure_int(product_id)},
         )
 
     def query_sku_list(self, product_ids: List[int]) -> Dict[str, Any]:
@@ -474,7 +482,7 @@ class GoofishClient:
         """下架商品 — unpublish a product."""
         return self._request(
             "/api/open/product/downShelf",
-            body={"product_id": product_id},
+            body={"product_id": self._ensure_int(product_id)},
         )
 
     def edit_product(
@@ -493,7 +501,7 @@ class GoofishClient:
             notify_url: 回调地址 (only used when product is published)
             **kwargs: Any product fields to update (item_biz_type, price, title, etc.)
         """
-        body: Dict[str, Any] = {"product_id": product_id}
+        body: Dict[str, Any] = {"product_id": self._ensure_int(product_id)}
         body.update(kwargs)
         if notify_url:
             body["notify_url"] = notify_url
@@ -514,7 +522,7 @@ class GoofishClient:
 
         If product is published, stock updates sync to Xianyu App immediately.
         """
-        body: Dict[str, Any] = {"product_id": product_id}
+        body: Dict[str, Any] = {"product_id": self._ensure_int(product_id)}
         if price is not None:
             body["price"] = price
         if original_price is not None:
@@ -532,7 +540,7 @@ class GoofishClient:
         """
         return self._request(
             "/api/open/product/delete",
-            body={"product_id": product_id},
+            body={"product_id": self._ensure_int(product_id)},
         )
 
     # ============================================================
@@ -607,14 +615,14 @@ class GoofishClient:
         """查询订单详情 — get full order details."""
         return self._request(
             "/api/open/order/detail",
-            body={"order_no": order_no},
+            body={"order_no": self._ensure_int(order_no)},
         )
 
     def query_order_kam(self, order_no: str) -> Dict[str, Any]:
         """订单卡密列表 — query virtual goods card/key info."""
         return self._request(
             "/api/open/order/kam/list",
-            body={"order_no": order_no},
+            body={"order_no": self._ensure_int(order_no)},
         )
 
     def ship_order(
@@ -641,7 +649,7 @@ class GoofishClient:
         Required: order_no, waybill_no, express_code, express_name
         """
         body: Dict[str, Any] = {
-            "order_no": order_no,
+            "order_no": self._ensure_int(order_no),
             "waybill_no": waybill_no,
             "express_code": express_code,
             "express_name": express_name,
@@ -678,7 +686,7 @@ class GoofishClient:
         return self._request(
             "/api/open/order/modify/price",
             body={
-                "order_no": order_no,
+                "order_no": self._ensure_int(order_no),
                 "order_price": order_price,
                 "express_fee": express_fee,
             },

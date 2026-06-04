@@ -172,25 +172,31 @@ print(orders)
 
 ## Common Pitfalls
 
-1. **Signature calculation order matters.** The MD5 sign is computed as `md5(appKey,bodyMd5,timestamp,appSecret)` in that exact order. For requests without a body, use `md5("{}")` or `md5("")`.
+1. **AppSecret may include a prefix.** If the env var or config value starts with `AppSecret` (e.g. `AppSecretRreMzuz...`), the `GoofishSigner` will automatically strip it. If you implement signing manually, use only the raw secret part after `AppSecret`.
 
-2. **Timestamp is in seconds, not milliseconds.** Using millisecond timestamps will cause signature validation failures.
+2. **product_id and order_no must be integers, not strings.** The API rejects string values with `type mismatch for field "product_id"`. The GoofishClient `_ensure_int()` method auto-converts, but if calling the API directly, always pass numeric IDs as `int`.
 
-3. **Body MD5 must be computed from the raw JSON string.** Whitespace and key ordering in the JSON body affect the MD5 hash. Use the exact string that will be sent.
+3. **Signature calculation order matters.** The MD5 sign is computed as `md5(appKey,bodyMd5,timestamp,appSecret)` in that exact order. For requests without a body, use `md5("{}")` or `md5("")`.
 
-4. **Product types, industries, and categories are interdependent.** You must first query categories (`/api/open/product/category/list`) with the correct `item_biz_type` and `sp_biz_type` to get valid `channel_cat_id` values.
+4. **Timestamp is in seconds, not milliseconds.** Using millisecond timestamps will cause signature validation failures.
 
-5. **Multi-spec products require SKU consistency.** For multi-spec products, the top-level `price` must match one of the SKU prices, and `stock` must equal the sum of all SKU stocks.
+5. **Body MD5 must be computed from the compact JSON string.** Whitespace and key ordering affect the MD5 hash. Always use `json.dumps(body, separators=(',', ':'))` — exactly matching what is sent over the wire.
 
-6. **Edit is partial — only send fields you want to change.** Unset fields are left unchanged. However, for multi-spec products already published to Xianyu, you cannot clear all SKUs (at least one must remain).
+6. **Product types, industries, and categories are interdependent.** You must first query categories (`/api/open/product/category/list`) with the correct `item_biz_type` and `sp_biz_type` to get valid `channel_cat_id` values.
 
-7. **Publish and edit-in-place are async.** Results are delivered via callback URL, not in the API response. You must set up a webhook server to receive these notifications.
+7. **publish_shop[0] requires many fields beyond user_name.** Required fields inside each `publish_shop` entry include: `user_name`, `title`, `content`, `images` (array of full URLs), `province`, `city`, `district` (integer area codes), `consign_type`, `price`, `express_fee`, `stock`, `stuff_status`. The top-level `price`/`stock` are also required.
 
-8. **The `seller_id` parameter is only for business-partner integrations.** For self-developed or third-party ERP integrations, omit this parameter.
+8. **Multi-spec products require SKU consistency.** For multi-spec products, the top-level `price` must match one of the SKU prices, and `stock` must equal the sum of all SKU stocks.
 
-9. **Product images use relative paths** (e.g., `product/20230722/161018-6546kdnp.jpg`), not full URLs, in the response. The full URL prefix varies.
+9. **Edit is partial — only send fields you want to change.** Unset fields are left unchanged. However, for multi-spec products already published to Xianyu, you cannot clear all SKUs (at least one must remain).
 
-10. **Push/Webhook endpoints are set in the Goofish developer console**, not via API. You must configure callback URLs manually for product and order push notifications.
+10. **Publish and edit-in-place are async.** Results are delivered via callback URL, not in the API response. You must set up a webhook server to receive these notifications.
+
+11. **The `seller_id` parameter is only for business-partner integrations.** For self-developed or third-party ERP integrations, omit this parameter.
+
+12. **Product images use full URLs** (e.g. `http://img.alicdn.com/bao/uploaded/...`) in the `publish_shop` request body, but relative paths in the API response (e.g. `product/20230722/161018-6546kdnp.jpg`).
+
+13. **Push/Webhook endpoints are set in the Goofish developer console**, not via API. You must configure callback URLs manually for product and order push notifications.
 
 ## Multi-Agent Orchestration
 

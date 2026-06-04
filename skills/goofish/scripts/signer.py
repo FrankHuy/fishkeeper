@@ -36,6 +36,10 @@ class GoofishSigner:
         if not app_key or not app_secret:
             raise ValueError("app_key and app_secret are required")
         self.app_key = app_key
+        # Strip common prefix if the secret value was copied with the field name
+        # e.g. "AppSecretRreMzuz..." -> "RreMzuz..."
+        if app_secret.startswith("AppSecret") and len(app_secret) > len("AppSecret"):
+            app_secret = app_secret[len("AppSecret"):]
         self.app_secret = app_secret
 
     def _compute_body_md5(self, body: Optional[Dict[str, Any]] = None) -> str:
