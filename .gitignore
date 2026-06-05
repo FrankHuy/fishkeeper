@@ -1,2 +1,28 @@
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Test reports with real business data
+goofish_lifecycle_test_report*.json
+*_report.json
+*_report_final.json
+
+# Environment and credentials
+.env
+.env.*
+*.env
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
